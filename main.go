@@ -16,11 +16,14 @@ func main() {
 		return
 	}
 	currentTime := time.Now()
+
 	fileDateId := fmt.Sprintf("%s_%s_%s", conf.Config.Str("integratorID"),
 		fmt.Sprint(currentTime.Format("02012006")), fmt.Sprint(currentTime.Format("150405")))
+
+	fmt.Println(fileDateId)
 	rex.GenerateFiles(fileDateId)
 	//UploadOnFTP(fileDateId)
-	// TODO remove "temp" folder
+	//TODO remove "temp" folder
 }
 
 func UploadOnFTP(fileDateId string) {

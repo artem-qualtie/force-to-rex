@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 )
 
 var IntegratorID, _ = conf.Config.Int("IntegratorID")
@@ -131,36 +132,115 @@ func TranslateRegionID(region string) int {
 	return 1 //TODO translate mapping: pba__Area_pb__c => RegionID
 }
 
-func TranslateCommercialResidential(commercialResidential string) int {
-	return 1 //TODO translate mapping: Development_Type__c => CommercialResidential
+var ResidentialPropertyType = map[string]int{
+	"Single Family":      11,
+	"House":              12,
+	"Apartment":          4,
+	"Townhouse":          39,
+	"Villa":              42,
+	"Studio":             53,
+	"Duplex":             13,
+	"Condo":              4,
+	"Penthouse":          45,
+	"Multi Family":       35,
+	"Land":               21,
+	"Loft":               95,
+	"Mobile Home":        25,
+	"Lot/Land":           28,
+	"Farm":               15,
+	"Boat Dock":          18,
+	"Other":              93,
+	"Parking":            86,
+	"Coop":               103,
+	"Rental":             102,
+	"Residential":        102,
+	"Residential Lease":  22,
+	"Residential Rental": 102,
+	"Waterfront":         68,
+}
+var CommercialPropertyType = map[string]int{
+	"Manufactured":                  4,
+	"Business Opportunity":          9,
+	"Commercial/Industrial":         4,
+	"Commercial/Industrial - Lease": 4,
+	"Hotel":                         12,
+	"Commercial":                    1,
+	"Commercial Lease":              1,
+	"Commercial Sale":               1,
+	"Business/Commercial":           1,
+	"Timeshare":                     1,
+	"Office":                        7,
+}
+
+//translate mapping: Development_Type__c => CommercialResidential
+func TranslateCommercialResidential(propertyType string) int {
+	if _, OK := CommercialPropertyType[propertyType]; OK {
+		return 2
+	}
+	return 1
+}
+
+//translate mapping: pba__PropertyType__c => PropertyType
+func TranslatePropertyType(propertyType string) int {
+	if answer, OK := ResidentialPropertyType[propertyType]; OK {
+		return answer
+	} else if answer, OK = CommercialPropertyType[propertyType]; OK {
+		return answer
+	}
+	return 1
 }
 
 func TranslateCityID(cityID string) int {
-	return 1 //TODO translate mapping: pba__PropertyType__c => PropertyType
+	return 1 //TODO translate mapping:
 }
 
-func TranslateCurrentListingCurrency(currentListingCurrency float64) string {
-	return "USD" //TODO translate
+func TranslateCurrentListingCurrency(currentListingCurrency string) string {
+	return currentListingCurrency
 }
 
 func TranslateDate(soldDate string) string {
-	return "1972-02-23" //TODO translate
+	currentTime, err := time.Parse("2006-01-02 15:04:05", soldDate)
+	if err != nil {
+		fmt.Println(err)
+	}
+	return currentTime.Format("2006-01-02")
 }
 
+var TransactionType = map[string]int{
+	"Sale": 2,
+	"Rent": 1,
+}
+
+//translate mapping: pba__ListingType__c => TransactionType
 func TranslateTransactionType(transactionType string) int {
-	return 1 //TODO translate mapping: pba__ListingType__c => TransactionType
+	return TransactionType[transactionType]
 }
 
-func TranslatePropertyType(propertyType string) int {
-	return 1 //TODO translate mapping: pba__PropertyType__c => PropertyType
+var PropertyCategory = map[string]int{
+	"Residential area":     17,
+	"Resort area":          6,
+	"Non residantial area": 3,
+	"Other":                10,
 }
 
+//mapping: Zone_Category__c => PropertyCategory
 func TranslatePropertyCategory(propertyCategory string) int {
-	return 1 //TODO translate mapping: Zone_Category__c => PropertyCategory
+	return PropertyCategory[propertyCategory]
 }
 
+var ListingStatus = map[string]int{
+	"New":         1,
+	"Active":      1,
+	"Offer":       12,
+	"Cancelled":   5,
+	"Sold_Rented": 2,
+	"Expired":     4,
+	"Closing":     8,
+}
+
+//translate mapping: pba__Status__c => ListingStatus
 func TranslateListingStatus(listingStatus string) int {
-	return 1 //TODO translate mapping: pba__Status__c => ListingStatus
+	return ListingStatus[listingStatus]
 }
 
 func DownloadImage(url, filename string) error {
@@ -243,7 +323,7 @@ func ForceToRex(forceDoc *salesforcemodel.PBAListingSObject) *rexmodel.Property 
 			RegionID: TranslateRegionID(forceDoc.RegionID),
 		},
 		CommercialResidential: rexmodel.CommercialResidential{
-			CommercialResidential: TranslateCommercialResidential(forceDoc.CommercialResidential),
+			CommercialResidential: ValidateNumber(TranslateCommercialResidential(forceDoc.PropertyType), 1, 2),
 		},
 		StreetNumber:    ValidateString(fmt.Sprint(forceDoc.StreetNumber), 20, true),
 		StreetName:      ValidateString(forceDoc.StreetName, 50, true),

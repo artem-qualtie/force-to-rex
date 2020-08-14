@@ -16,7 +16,7 @@ type PBAListingSObject struct {
 	Latitude               string  `force:"pba__Latitude_pb__c"`
 	Longitude              string  `force:"pba__Longitude_pb__c"`
 	CurrentListingPrice    float64 `force:"pba__ListingPrice_pb__c"`
-	CurrentListingCurrency float64 `force:"Common_Charge_Currency__c"`
+	CurrentListingCurrency string  `force:"Common_Charge_Currency__c"`
 	RentalCommissionMonths float64 `force:"MonthlyRent__c"`
 	SoldPrice              float64 `force:"pba__SoldPrice__c"`
 	SoldDate               string  `force:"pba__SoldDate__c"`
@@ -37,7 +37,6 @@ type PBAListingSObject struct {
 	DescriptionText        string  `force:"pba__Description_pb__c"`
 	RatingValue            string  `force:"Energy_Efficiency_Rating_by_Expert__c"`
 	HeatingCost            int     `force:"Heating_Charges__c"`
-	LastModifiedBy         string  `force:"LastModifiedDate"` // TODO remove after tests
 	//AlternateURL           string `force:"Listing_URL__c"` //TODO !!!!!! Check
 	//PriceType              int    `force:""` //TODO !!!!!! Check
 	//FloorLevel             int    `force:"Floor_Picklist__c"`//TODO !!!!!! Check
