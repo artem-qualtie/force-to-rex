@@ -37,8 +37,8 @@ type PBAListingSObject struct {
 	DescriptionText        string  `force:"pba__Description_pb__c"`
 	RatingValue            string  `force:"Energy_Efficiency_Rating_by_Expert__c"`
 	HeatingCost            int     `force:"Heating_Charges__c"`
-	//AlternateURL           string `force:"Listing_URL__c"` //TODO !!!!!! Check
-	//PriceType              int    `force:""` //TODO !!!!!! Check
+	AlternateURL           string  `force:"Listing_URL__c"`
+	//PriceType              int    `force:""` //TODO !!!!!! It is not CurrencyIsoCode
 	//FloorLevel             int    `force:"Floor_Picklist__c"`//TODO !!!!!! Check
 }
 

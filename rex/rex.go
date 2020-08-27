@@ -367,7 +367,7 @@ func ForceToRex(forceDoc *salesforcemodel.PBAListingSObject) *rexmodel.Property 
 		NumberOfToiletRooms: int(forceDoc.NumberOfToiletRooms),
 		NumberOfFloors:      int(forceDoc.NumberOfFloors),
 		YearBuild:           ValidateString(fmt.Sprint(forceDoc.YearBuild), 50, false),
-		//AlternateURL:               TranslateAlternateURL(forceDoc.AlternateURL),// TODO Check
+		AlternateURL:        ValidateString(forceDoc.AlternateURL, 200, false),
 		PropertyDescriptions: &rexmodel.PropertyDescriptions{
 			Descriptions: []rexmodel.PropertyDescription{
 				{
